@@ -1,0 +1,17 @@
+{
+  "name": "@pulse-meet/shared",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "author": "AARVAK-VSET <contact@aarvak.org>",
+  "license": "MIT",
+  "description": "Shared models and utilities for PulseMeet",
+  "dependencies": {
+    "class-transformer": "^0.5.1"
+  }
+}

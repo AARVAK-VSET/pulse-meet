@@ -1,0 +1,32 @@
+version: '3.3'
+
+services:
+  client:
+    container_name: quickmeet-client
+    build:
+      context: .
+    working_dir: /app/client
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - APP_PORT=3000
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+    command: "npm run start"
+
+  server:
+    container_name: quickmeet-server
+    build:
+      context: .
+    working_dir: /app/server
+    ports:
+      - "3001:3001"
+    environment:
+      - APP_PORT=3001
+      - NODE_ENV=development
+    volumes:
+      - ./server:/app/server
+      - /app/server/node_modules
+    command: "npm run start:server"

@@ -1,0 +1,24 @@
+{
+  "name": "PulseMeet",
+  "version": "1.0.0",
+  "description": "Real-time collaborative video meeting platform by AARVAK-VSET",
+  "manifest_version": 3,
+  "author": "AARVAK-VSET https://github.com/AARVAK-VSET",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "favicon-32x32.png",
+    "default_title": "PulseMeet"
+  },
+  "host_permissions": [
+    "http://localhost:3000/*"
+  ],
+  "icons": {
+    "16": "favicon-16x16.png",
+    "32": "favicon-32x32.png",
+    "128": "logo_128.png"
+  },
+  "permissions": [
+    "identity",
+    "storage"
+  ]
+}

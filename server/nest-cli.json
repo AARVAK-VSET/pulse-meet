@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "../logs/**/*",
+        "outDir": "dist/logs"
+      },
+      {
+        "include": "../quickmeet.sqlite",
+        "outDir": "dist/quickmeet.sqlite"
+      }
+    ]
+  }
+}

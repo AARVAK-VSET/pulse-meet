@@ -1,0 +1,39 @@
+{
+  "name": "@pulse-meet/root",
+  "version": "1.0.0",
+  "description": "Real-time WebRTC collaborative video conferencing platform by AARVAK-VSET",
+  "author": "AARVAK-VSET <contact@aarvak.org>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AARVAK-VSET/pulse-meet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AARVAK-VSET/pulse-meet/issues"
+  },
+  "homepage": "https://github.com/AARVAK-VSET/pulse-meet#readme",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "build:client": "npm run build --w client",
+    "build:client:watch": "npm run build:watch --w client",
+    "build:chrome": "npm run chrome:build --w client",
+    "build:shared": "npm run build --w shared",
+    "build:server": "npm run build --w server",
+    "start": "npm run start --w server",
+    "start:server": "npm run start:server --w server",
+    "start:dev": "npm run start:dev --w server",
+    "start:client": "npm run start:client --w client",
+    "migration:run": "npm run migration:run --w server",
+    "start:prod": "cd server && npm run start",
+    "start:all": "npm-run-all2 -p start:client start:server",
+    "start:docker": "docker-compose up --build --remove-orphans"
+  },
+  "workspaces": [
+    "shared",
+    "client",
+    "server"
+  ],
+  "devDependencies": {
+    "npm-run-all2": "^7.0.1"
+  }
+}
