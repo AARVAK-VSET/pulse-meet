@@ -287,8 +287,8 @@ const EventCard = ({ sx, event, onDelete, handleEditClick, isEditable, handleEve
           sx={[
             (theme) => ({
               textAlign: 'left',
-              color: event.summary ?? theme.palette.grey[400],
-              fontStyle: event.summary ?? 'italic',
+              color: event.summary ? theme.palette.text.primary : theme.palette.grey[400],
+              fontStyle: event.summary ? 'normal' : 'italic',
               display: 'flex',
               alignItems: 'center',
             }),
