@@ -22,7 +22,8 @@
       "@pages/*": ["pages/*"],
       "@theme/*": ["theme/*"],
       "@config/*": ["config/*"],
-      "@api/*": ["api/*"]
+      "@api/*": ["api/*"],
+      "@quickmeet/shared": ["../../shared/src/index.ts"]
     },
 
     /* Linting */

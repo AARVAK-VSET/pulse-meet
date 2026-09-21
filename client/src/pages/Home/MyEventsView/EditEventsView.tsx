@@ -6,7 +6,6 @@ import Dropdown, { DropdownOption } from '@components/Dropdown';
 import RoomsDropdown, { RoomsDropdownOption } from '@components/RoomsDropdown';
 import {
   chromeBackground,
-  convertToLocaleDate,
   convertToLocaleTime,
   convertToRFC3339,
   createDropdownOptions,
@@ -123,7 +122,7 @@ export default function EditEventsView({ open, event, handleClose, currentRoom, 
   async function setAvailableRooms() {
     const { startTime, duration, seats } = formData;
     const { floor } = preferences;
-    const currentDate = convertToLocaleDate(new Date(date.toISOString()).toISOString());
+    const currentDate = date.format('YYYY-MM-DD');
     const formattedStartTime = convertToRFC3339(currentDate, startTime);
 
     setRoomLoading(true);
@@ -155,8 +154,8 @@ export default function EditEventsView({ open, event, handleClose, currentRoom, 
     }
 
     if (currentRoom) {
-      const filteredPreferredRooms = data.preferred.filter((item) => item.email !== currentRoom.email);
-      const filteredUnPreferredRooms = data.others.filter((item) => item.email !== currentRoom.email);
+      const filteredPreferredRooms = data.preferred.filter((item: IConferenceRoom) => item.email !== currentRoom.email);
+      const filteredUnPreferredRooms = data.others.filter((item: IConferenceRoom) => item.email !== currentRoom.email);
 
       preferredRoomOptions = createRoomDropdownOptions(filteredPreferredRooms);
       unPreferredRoomOptions = createRoomDropdownOptions(filteredUnPreferredRooms);
@@ -168,7 +167,7 @@ export default function EditEventsView({ open, event, handleClose, currentRoom, 
         currentRoomOption.isBusy = true;
       }
 
-      if (data.preferred.find((d) => d.email === currentRoom.email)) {
+      if (data.preferred.find((d: IConferenceRoom) => d.email === currentRoom.email)) {
         preferredRoomOptions.unshift(currentRoomOption);
       } else {
         unPreferredRoomOptions.unshift(currentRoomOption);
@@ -215,7 +214,7 @@ export default function EditEventsView({ open, event, handleClose, currentRoom, 
   const onSaveClick = () => {
     const updatedEvent = {
       ...formData,
-      date: date.toISOString(),
+      date: date.format('YYYY-MM-DD'),
     };
     setFormData(updatedEvent);
     onEditConfirmed(updatedEvent);
