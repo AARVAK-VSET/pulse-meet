@@ -9,10 +9,10 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request: _Request = context.switchToHttp().getRequest();
 
-    if (!request.cookies.accessToken || !request.cookies.accessTokenIv) {
+    if (!request.cookies?.accessToken || !request.cookies?.accessTokenIv) {
       throw new UnauthorizedException('No access token found');
     }
-
+    
     try {
       request.accessToken = await this.encryptionService.decrypt(request.cookies.accessToken, request.cookies.accessTokenIv);
       request.hd = request.cookies.hd;

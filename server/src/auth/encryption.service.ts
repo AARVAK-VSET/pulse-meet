@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import * as crypto from 'crypto';
 import appConfig from 'src/config/env/app.config';
@@ -37,11 +37,21 @@ export class EncryptionService {
     });
   }
 
+  private static readonly HEX_REGEX = /^[0-9a-fA-F]+$/;
+
   async decrypt(encryptedData: string, iv: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       try {
         if (!encryptedData) {
           return resolve(null);
+        }
+
+        if (!iv || !EncryptionService.HEX_REGEX.test(iv) || Buffer.byteLength(iv, 'hex') !== 16) {
+          return reject(new UnauthorizedException('Invalid initialization vector'));
+        }
+
+        if (!EncryptionService.HEX_REGEX.test(encryptedData)) {
+          return reject(new UnauthorizedException('Invalid encrypted payload'));
         }
 
         const ivBuffer = Buffer.from(iv, 'hex');
@@ -53,8 +63,7 @@ export class EncryptionService {
 
         resolve(decrypted.toString());
       } catch (error) {
-        reject(error);
+        reject(new UnauthorizedException('Invalid access token'));
       }
     });
   }
-}

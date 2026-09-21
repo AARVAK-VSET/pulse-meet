@@ -49,20 +49,25 @@ export class AuthController {
       res.clearCookie('refreshToken');
       res.clearCookie('refreshTokenIv');
 
-      const { accessToken, accessTokenIv } = req.cookies;
+      const { accessToken, accessTokenIv } = req.cookies ?? {};
       if (accessToken && accessTokenIv) {
-        const decryptedAccessToken = await this.encryptionService.decrypt(accessToken, accessTokenIv);
+        try {
+          const decryptedAccessToken = await this.encryptionService.decrypt(accessToken, accessTokenIv);
 
-        const client = this.googleApiService.getOAuthClient();
+          const client = this.googleApiService.getOAuthClient();
 
-        client.setCredentials({ access_token: decryptedAccessToken });
+          client.setCredentials({ access_token: decryptedAccessToken });
 
-        await this.authService.logout(client);
+          await this.authService.logout(client);
+        } 
+        catch (error) {
+          throw new UnauthorizedException('Invalid access token');
+        }
       }
     }
 
     return createResponse(true);
-  }
+    }
 
   @Get('/oauth2/url')
   getOAuthUrl(@Query('client') client: 'chrome' | 'web'): ApiResponse<string> {
@@ -73,7 +78,16 @@ export class AuthController {
 
   @Get('/token/refresh')
   async refreshAppToken(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<Boolean>> {
-    const refreshToken = await this.encryptionService.decrypt(req.cookies.refreshToken, req.cookies.refreshTokenIv);
+    if (!req.cookies?.refreshToken || !req.cookies?.refreshTokenIv) {
+      throw new UnauthorizedException('No refresh token found');
+    }
+
+    let refreshToken: string;
+    try {
+      refreshToken = await this.encryptionService.decrypt(req.cookies.refreshToken, req.cookies.refreshTokenIv);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
     const accessToken = await this.authService.refreshAppToken(refreshToken);
 
     const { iv, encryptedData } = await this.encryptionService.encrypt(accessToken);
