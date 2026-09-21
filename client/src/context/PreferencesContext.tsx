@@ -40,7 +40,10 @@ export const PreferencesProvider = ({ children }: PreferencesProviderProps) => {
       const savedPreferences = await cacheService.get('preferences');
       if (savedPreferences) {
         const parsedPref = JSON.parse(savedPreferences);
-        setPreferences(parsedPref);
+        setPreferences({
+          ...parsedPref,
+          title: parsedPref.title || defaultPreferences.title,
+        });
       }
 
       setLoading(false);
@@ -50,12 +53,13 @@ export const PreferencesProvider = ({ children }: PreferencesProviderProps) => {
   }, []);
 
   useEffect(() => {
-    if (!preferences.title) {
-      preferences.title = defaultPreferences.title;
-    }
+    // Guard: don't persist anything until the initial async load has completed.
+    // Without this, the default state gets written to storage before
+    // loadPreferences() resolves, wiping out any previously saved preferences.
+    if (loading) return;
 
     cacheService.save('preferences', JSON.stringify(preferences));
-  }, [preferences]);
+  }, [preferences, loading]);
 
   if (loading) {
     return <></>;
