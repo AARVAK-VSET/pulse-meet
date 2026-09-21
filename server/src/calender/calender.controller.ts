@@ -61,6 +61,7 @@ export class CalenderController {
 
   @SkipThrottle()
   @UseGuards(AuthGuard)
+  @UseInterceptors(OauthInterceptor)
   @Get('/rooms/highest-seat-count')
   async getMaxSeatCapacity(@_OAuth2Client() client: OAuth2Client): Promise<ApiResponse<number>> {
     const count = await this.calenderService.getHighestSeatCapacity(client);
@@ -148,6 +149,7 @@ export class CalenderController {
 
   @SkipThrottle()
   @UseGuards(AuthGuard)
+  @UseInterceptors(OauthInterceptor)
   @Get('/floors')
   async listFloors(@_OAuth2Client() client: OAuth2Client): Promise<ApiResponse<string[]>> {
     const floors = await this.calenderService.listFloors(client);
