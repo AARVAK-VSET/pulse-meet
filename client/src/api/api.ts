@@ -22,7 +22,7 @@ export default class Api {
       baseURL: secrets.backendEndpoint,
       timeout: secrets.nodeEnvironment === 'development' ? 1000000 : 10000,
       headers: this.getHeaders(),
-      withCredentials: secrets.nodeEnvironment === 'development' ? true : false,
+      withCredentials: true,
     });
 
     this.navigate = navigate;
@@ -49,7 +49,7 @@ export default class Api {
         baseURL: secrets.backendEndpoint,
         timeout: secrets.nodeEnvironment === 'development' ? 1000000 : 10000,
         headers: this.getHeaders(),
-        withCredentials: secrets.nodeEnvironment === 'development' ? true : false,
+        withCredentials: true,
       });
 
       return res.data.data;
