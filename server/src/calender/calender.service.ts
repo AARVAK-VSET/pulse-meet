@@ -302,9 +302,10 @@ export class CalenderService {
       }
       const createdAtA = new Date(a.createdAt).getTime();
       const createdAtB = new Date(b.createdAt).getTime();
-      const timestamps = [createdAtA, createdAtB];
-      const firstCreated = Math.min(...timestamps);
-      return firstCreated === createdAtA ? 1 : -1;
+      if (createdAtA !== createdAtB) {
+        return createdAtA - createdAtB;
+      }
+      return a.eventId < b.eventId ? -1 : a.eventId > b.eventId ? 1 : 0;
     });
 
     return sortedEvents;
