@@ -12,7 +12,7 @@ import { Cache as CacheM, CACHE_MANAGER } from '@nestjs/cache-manager';
   providers: [
     {
       provide: 'GoogleApiService',
-      inject: [REQUEST, JwtService, appConfig.KEY, CACHE_MANAGER, CacheM],
+      inject: [REQUEST, JwtService, appConfig.KEY, Logger, CACHE_MANAGER],
       scope: Scope.REQUEST,
       // service provider
       useFactory: (request: Request, jwtService: JwtService, config: ConfigType<typeof appConfig>, logger: Logger, cacheManager: Cache) => {
@@ -21,6 +21,7 @@ import { Cache as CacheM, CACHE_MANAGER } from '@nestjs/cache-manager';
       },
     },
     JwtService,
+    Logger,
   ],
   exports: ['GoogleApiService'],
 })
