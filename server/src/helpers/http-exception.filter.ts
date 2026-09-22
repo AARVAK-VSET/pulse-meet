@@ -1,6 +1,6 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
 import { Response } from 'express';
-import { ErrorResponse } from '@quickmeet/shared';
+import { ErrorResponse } from '@pulse-meet/shared';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {

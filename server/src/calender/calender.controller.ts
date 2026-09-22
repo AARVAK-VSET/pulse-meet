@@ -14,7 +14,7 @@ import {
   EventUpdateResponse,
   IPeopleInformation,
   IAvailableRooms,
-} from '@quickmeet/shared';
+} from '@pulse-meet/shared';
 import { createResponse } from 'src/helpers/payload.util';
 import { _Request } from 'src/auth/interfaces';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
