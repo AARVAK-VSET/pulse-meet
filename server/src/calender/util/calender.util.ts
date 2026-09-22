@@ -15,7 +15,8 @@ export function isRoomAvailable(busyTimes: BusyTimes[], startTime: Date, endTime
 }
 
 export function extractRoomByEmail(rooms: IConferenceRoom[], email: string) {
-  const index = rooms.findIndex((room) => email.includes(room.email));
+  const targetEmail = String(email).toLowerCase();
+  const index = rooms.findIndex((room) => String(room.email).toLowerCase() === targetEmail);
   if (index !== -1) {
     return rooms[index];
   }
