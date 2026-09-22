@@ -1,4 +1,4 @@
-import { IConferenceRoom } from '@quickmeet/shared';
+import { IConferenceRoom } from '@pulse-meet/shared';
 import { BusyTimes } from '../interfaces/freebusy.interface';
 
 export function isRoomAvailable(busyTimes: BusyTimes[], startTime: Date, endTime: Date) {

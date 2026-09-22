@@ -1,4 +1,4 @@
-import { ApiResponse } from '@quickmeet/shared';
+import { ApiResponse } from '@pulse-meet/shared';
 import { Body, Controller, Get, Inject, Post, Req, Res, Logger, Query, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { _OAuth2Client } from './decorators';

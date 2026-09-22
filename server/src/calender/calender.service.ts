@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, ForbiddenException, Inject, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { calendar_v3 } from 'googleapis';
 import { extractRoomByEmail, isRoomAvailable, validateEmail } from './util/calender.util';
-import { DeleteResponse, EventResponse, EventUpdateResponse, IConferenceRoom, IPeopleInformation, IAvailableRooms } from '@quickmeet/shared';
+import { DeleteResponse, EventResponse, EventUpdateResponse, IConferenceRoom, IPeopleInformation, IAvailableRooms } from '@pulse-meet/shared';
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleApiService } from 'src/google-api/google-api.service';
 import { AuthService } from '../auth/auth.service';

@@ -26,7 +26,8 @@
     "migration:run": "npm run migration:run --w server",
     "start:prod": "cd server && npm run start",
     "start:all": "npm-run-all2 -p start:client start:server",
-    "start:docker": "docker-compose up --build --remove-orphans"
+    "start:docker": "docker-compose up --build --remove-orphans",
+    "test": "jest"
   },
   "workspaces": [
     "shared",
@@ -34,6 +35,9 @@
     "server"
   ],
   "devDependencies": {
-    "npm-run-all2": "^7.0.1"
+    "@types/jest": "^30.0.0",
+    "jest": "^30.5.2",
+    "npm-run-all2": "^7.0.1",
+    "ts-jest": "^29.4.12"
   }
 }

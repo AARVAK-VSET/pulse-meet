@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { ApiResponse, StatusTypes } from '@quickmeet/shared';
+import { ApiResponse, StatusTypes } from '@pulse-meet/shared';
 
 export const createResponse = <T>(
   data: T,

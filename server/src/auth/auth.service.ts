@@ -1,4 +1,4 @@
-import { IConferenceRoom, IPeopleInformation } from '@quickmeet/shared';
+import { IConferenceRoom, IPeopleInformation } from '@pulse-meet/shared';
 import { BadRequestException, Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import appConfig from '../config/env/app.config';
 import { ConfigType } from '@nestjs/config';
@@ -83,14 +83,13 @@ export class AuthService {
 
   async getFloors(client: OAuth2Client): Promise<string[]> {
     const conferenceRooms = (await this.getDirectoryResources(client)) || [];
-    const floors = Array.from(new Set(conferenceRooms.map((room) => room.floor)));
-
-    // assuming floor is a string in the format F1, F2 etc
-    floors.sort((a, b) => {
-      const numA = parseInt(a.slice(1), 10);
-      const numB = parseInt(b.slice(1), 10);
-      return numA - numB;
-    });
+    const floors = Array.from(new Set(conferenceRooms.map((room) => room.floor).filter((floor): floor is string => Boolean(floor))));
+    floors.sort((a, b) =>
+      a.localeCompare(b, undefined, {
+        numeric: true,
+        sensitivity: 'base',
+      }),
+    );
 
     return floors;
   }
@@ -99,10 +98,10 @@ export class AuthService {
    * gets the calender resources from google and save it in the cache
    */
   async createDirectoryResources(oauth2Client: OAuth2Client): Promise<IConferenceRoom[]> {
-    const { items } = await this.googleApiService.getCalendarResources(oauth2Client);
+    const { items } = (await this.googleApiService.getCalendarResources(oauth2Client)) || {};
 
     const rooms: IConferenceRoom[] = [];
-    for (const resource of items) {
+    for (const resource of items ?? []) {
       rooms.push({
         id: resource.resourceId,
         email: resource.resourceEmail,
@@ -123,7 +122,7 @@ export class AuthService {
     const items = await this.googleApiService.listPeople(oauth2Client);
 
     const people: IPeopleInformation[] = items.map((item) => {
-      const email = item.emailAddresses.find((email) => email.metadata.primary && email.metadata.verified);
+      const email = item.emailAddresses?.find((email) => email.metadata.primary && email.metadata.verified);
       const photo = item.photos?.find((photo) => photo.metadata.primary);
       const name = item.names?.find((name) => name.metadata.primary);
       return {
