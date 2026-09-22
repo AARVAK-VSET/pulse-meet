@@ -19,7 +19,9 @@ export class EncryptionService {
   async encrypt(text: string): Promise<{ iv: string; encryptedData: string } | null> {
     return new Promise((resolve, reject) => {
       try {
-        if (!text) resolve(null);
+        if (!text) {
+          return resolve(null);
+        }
 
         const iv = crypto.randomBytes(16);
         const cipher = crypto.createCipheriv(this.algorithm, Buffer.from(this.key), iv);
