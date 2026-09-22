@@ -1,7 +1,6 @@
 import Api from '@/api/api';
 import { ROUTES } from '@config/routes';
 import { secrets } from '@config/secrets';
-import { ApiResponse } from '@quickmeet/shared';
 import dayjs, { Dayjs } from 'dayjs';
 import { toast } from 'react-hot-toast';
 import { NavigateFunction } from 'react-router-dom';
@@ -143,22 +142,54 @@ export const createDropdownOptions = (options: string[], type: 'time' | 'default
   return (options || []).map((option) => ({ value: option, text: type === 'time' ? formatMinsToHM(Number(option), 'm') : option }));
 };
 
-export const renderError = async (err: ApiResponse<any>, navigate: NavigateFunction) => {
-  const { status, statusCode, message, redirect } = err;
-  if (status === 'error') {
-    if (statusCode === 401) {
-      try {
-        await new Api().logout();
-      } catch (error) { }
-      navigate(ROUTES.signIn);
-    } else if (statusCode === 400) {
-      toast.error('Input missing fields');
-    } else if (redirect) {
-      navigate(ROUTES.signIn);
+export const renderError = async (err: any, navigate: NavigateFunction) => {
+  if (!err) return;
+
+  const resData = err?.response?.data || (typeof err === 'object' ? err : {});
+
+  const status = resData.status || err.status || 'error';
+  const statusCode = resData.statusCode || err?.response?.status || err.statusCode || (typeof err.status === 'number' ? err.status : undefined);
+  const redirect = resData.redirect || err.redirect;
+
+  let message = resData.message || err.message || resData.error || err.error;
+
+  if (Array.isArray(message)) {
+    message = message.join(', ');
+  }
+
+  if (err?.code === 'ERR_CANCELED' || status === 'ignore') {
+    return;
+  }
+
+  if (statusCode === 401) {
+    try {
+      await new Api().logout();
+    } catch (error) { }
+    navigate(ROUTES.signIn);
+    return;
+  }
+
+  if (redirect) {
+    navigate(ROUTES.signIn);
+    return;
+  }
+
+  if (statusCode === 400 && (!message || message === 'Bad Request')) {
+    message = 'Input missing fields';
+  }
+
+  if (!message || typeof message !== 'string') {
+    const isNetworkError = err?.code === 'ERR_NETWORK' || err?.message === 'Network Error' || (typeof navigator !== 'undefined' && !navigator.onLine);
+    if (isNetworkError) {
+      message = 'Network error. Please check your connection and try again.';
+    } else if (statusCode && statusCode >= 500) {
+      message = 'Server error. Please try again later.';
     } else {
-      message && toast.error(message);
+      message = 'An unexpected error occurred. Please try again.';
     }
   }
+
+  toast.error(message);
 };
 
 export const formatMinsToHM = (value: number, decorator?: string) => {
