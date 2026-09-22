@@ -237,15 +237,33 @@ export default class Api {
 
   handleError(error: any) {
     // used for Abort request controllers
-    if (error.code === 'ERR_CANCELED') {
+    if (error?.code === 'ERR_CANCELED') {
       return this.createReply('ignore', 'Pending request aborted', null);
     }
 
-    const res: ApiResponse<any> = error?.response?.data;
+    const res = error?.response?.data;
     if (res) {
-      return res;
+      const statusCode = res.statusCode || error.response?.status;
+      let message = res.message || res.error || error.message;
+
+      if (Array.isArray(message)) {
+        message = message.join(', ');
+      }
+
+      return {
+        status: res.status || 'error',
+        statusCode: statusCode,
+        message: message || (statusCode >= 500 ? 'Server error. Please try again later.' : 'An unexpected error occurred'),
+        redirect: res.redirect,
+        data: res.data ?? null,
+      };
     }
 
-    return this.createReply('error', 'Something went wrong', null);
+    const isNetworkError = error?.code === 'ERR_NETWORK' || error?.message === 'Network Error' || (typeof navigator !== 'undefined' && !navigator.onLine);
+    const message = isNetworkError
+      ? 'Network error. Please check your connection and try again.'
+      : error?.message || 'An unexpected error occurred. Please try again.';
+
+    return this.createReply('error', message, null);
   }
 }
