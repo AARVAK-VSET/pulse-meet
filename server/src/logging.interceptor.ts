@@ -11,15 +11,14 @@ export class LoggingInterceptor implements NestInterceptor {
 
     // todo: add logger instance here
     console.log(`[Incoming Request]: ${method} ${url}`);
-    console.log(`[Incoming Cookies]: ${JSON.stringify(request.cookies)}`);
 
     return next.handle().pipe(
-      tap((data) => {
+      tap(() => {
         const response = context.switchToHttp().getResponse();
         const statusCode = response.statusCode;
         const duration = Date.now() - now;
 
-        console.log(`[Outgoing Response]: ${method} ${url} - Status: ${statusCode} - Duration: ${duration}ms - ${JSON.stringify(data)}`);
+        console.log(`[Outgoing Response]: ${method} ${url} - Status: ${statusCode} - Duration: ${duration}ms`);
       }),
     );
   }
