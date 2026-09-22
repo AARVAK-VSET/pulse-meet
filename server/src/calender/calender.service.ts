@@ -30,9 +30,9 @@ export class CalenderService {
     if (attendees?.length) {
       for (const attendee of attendees) {
         if (validateEmail(attendee.email)) {
-          filteredAttendees.push({ email: attendee.email, photo: attendee.photo.length > 1024 ? '' : attendee.photo, name: attendee.name });
+                   filteredAttendees.push({ email: attendee.email, photo: (attendee.photo?.length ?? 0) > 1024 ? '' : attendee.photo, name: attendee.name });
         } else {
-          throw new BadRequestException('Invalid attendee email provided: ' + attendee);
+          throw new BadRequestException('Invalid attendee email provided: ' + attendee.email);
         }
       }
     }
@@ -368,13 +368,14 @@ export class CalenderService {
       }
     }
 
-    attendees.push({ email: event.organizer.email });
+       const safeAttendees = attendees ? [...attendees] : [];
+    safeAttendees.push({ email: event.organizer.email });
 
     const filteredAttendees: IPeopleInformation[] = [];
     let responseStatus: string;
 
-    if (attendees?.length) {
-      for (const attendee of attendees) {
+    if (safeAttendees.length) {
+      for (const attendee of safeAttendees) {
         if (validateEmail(attendee.email)) {
           const existingAttendee = event.attendees?.find((a) => a.email === attendee.email);
           if (existingAttendee) {
@@ -386,7 +387,7 @@ export class CalenderService {
             filteredAttendees.push({ email: attendee.email });
           }
         } else {
-          throw new BadRequestException('Invalid attendee email provided: ' + attendee);
+          throw new BadRequestException('Invalid attendee email provided: ' + attendee.email);
         }
       }
     }
@@ -433,9 +434,9 @@ export class CalenderService {
     const result = await this.googleApiService.updateCalenderEvent(client, eventId, updatedEvent);
     const people = await this.authService.getPeopleResources(client);
 
-    let updatedAttendees: IPeopleInformation[] = [];
+       let updatedAttendees: IPeopleInformation[] = [];
 
-    for (const attendee of result.attendees) {
+    for (const attendee of result.attendees || []) {
       if (!attendee.email.endsWith('resource.calendar.google.com') && attendee.email !== event.organizer.email) {
         const person = people.find((person) => person.email === attendee.email);
         updatedAttendees.push({ ...attendee, ...(person || {}) });
@@ -476,11 +477,11 @@ export class CalenderService {
   async updateEventResponse(client: OAuth2Client, userEmail: string, eventId: string, responseStatus: string): Promise<EventResponse> {
     const event = await this.googleApiService.getCalenderEvent(client, eventId);
 
-    if (!event.attendees.some(({ email }) => email === userEmail)) {
+       if (!event.attendees?.some(({ email }) => email === userEmail)) {
       throw new ForbiddenException('Not authorized to respond to this event');
     }
 
-    for (const attendee of event.attendees) {
+    for (const attendee of event.attendees || []) {
       if (attendee.email === userEmail && !attendee.email.endsWith('resource.calendar.google.com') && attendee.email !== event.organizer.email) {
         attendee.responseStatus = responseStatus;
         break;
@@ -494,7 +495,7 @@ export class CalenderService {
     };
 
     const result = await this.googleApiService.updateCalenderEvent(client, eventId, eventPayload);
-    const updatedAttendees = result.attendees.filter(
+        const updatedAttendees = (result.attendees || []).filter(
       (attendee) => !attendee.email.endsWith('resource.calendar.google.com') && attendee.email !== event.organizer.email,
     );
 
