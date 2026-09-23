@@ -36,7 +36,9 @@
     "chrome:build": "npm run chrome:generate-manifest && tsc -b && vite build --mode chrome",
     "chrome:generate-manifest": "node generate-manifest.js",
     "serve": "npx http-server build_web --port 3000",
-    "lint": "eslint \"{src}/**/*.ts\" --fix"
+    "lint": "eslint \"{src}/**/*.ts\" --fix",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "eslintConfig": {
     "extends": [
@@ -67,9 +69,11 @@
     "eslint": "^8.42.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
+    "jsdom": "^25.0.1",
     "prettier": "^3.3.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "typescript": "^5.6.3",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^2.1.9"
   }
 }
