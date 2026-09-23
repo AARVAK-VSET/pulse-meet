@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "isolatedModules": true,
+    "incremental": false,
+    "types": ["jest", "node"],
+    "paths": {
+      "@pulse-meet/shared": ["../shared/index.ts"],
+      "interfaces": ["../shared/interfaces/index.ts"]
+    }
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"]
+}

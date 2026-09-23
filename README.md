@@ -59,6 +59,41 @@ npm run start:all
 
 ---
 
+## 🧪 Running Tests
+
+Backend tests use [Jest](https://jestjs.io/) with `ts-jest` and live in `server/test/`. No `.env`, Google account, or `npm run build:shared` step is needed.
+
+```bash
+# Run the full backend test suite (unit + integration) from the repo root
+npm test
+
+# Run only one layer
+npm run test:unit
+npm run test:integration
+
+# Coverage report (written to server/coverage/)
+npm run test:cov
+
+# Watch mode and type-checking of src + tests (run from the server workspace)
+npm run test:watch --w server
+npm run test:typecheck --w server
+```
+
+| Layer       | Location                          | What it covers                                                                                           |
+| ----------- | --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Unit        | `server/test/**/*.spec.ts`        | Services and utilities (`AuthService`, `EncryptionService`, `AuthGuard`, `CalenderService`, room availability) with every dependency mocked |
+| Integration | `server/test/**/*.int-spec.ts`    | Real Nest `AuthModule` + `CalenderModule` over HTTP via `supertest`, with the same pipes and filters as `main.ts` |
+
+**Isolation from production data.** Tests can never reach real Google Workspace data or credentials:
+
+- `test/setup/test-env.ts` sets `NODE_ENV=test`, a test-only `ENCRYPTION_KEY`, and dummy OAuth credentials before every test file. The integration app loads config with `ignoreEnvFile: true`, so a local `.env` is never read.
+- `test/setup/no-network.ts` blocks all outbound HTTP/HTTPS and `fetch` traffic except loopback. If code reaches a real Google API, the test fails immediately.
+- Integration tests replace `GoogleApiService` with `InMemoryGoogleApi` (`test/utils/in-memory-google-api.ts`), an in-memory store of rooms, people and events that is reset before each test. Caching uses Nest's in-memory store.
+
+To add a test, put `*.spec.ts` files (unit) or `*.int-spec.ts` files (integration) anywhere under `server/test/`. Use `createTestApp()` from `test/utils/create-test-app.ts` to boot the API against the in-memory fake.
+
+---
+
 ## 📁 Repository Structure
 
 ```

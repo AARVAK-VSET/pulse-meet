@@ -30,3 +30,6 @@ yarn-debug.log*
 Thumbs.db
 .vscode/
 .idea/
+
+# Test coverage
+coverage/
