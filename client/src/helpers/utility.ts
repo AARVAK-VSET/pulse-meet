@@ -2,8 +2,11 @@ import Api from '@/api/api';
 import { ROUTES } from '@config/routes';
 import { secrets } from '@config/secrets';
 import dayjs, { Dayjs } from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { toast } from 'react-hot-toast';
 import { NavigateFunction } from 'react-router-dom';
+
+dayjs.extend(customParseFormat);
 
 /**
  * Returns an array of time strings formatted as HH:mm in 12 hrs format with 15mins interval
@@ -84,6 +87,11 @@ export function getTimeZoneString() {
   return timeZone;
 }
 
+/**
+ * Returns the browser's current UTC offset formatted as "+05:30", "-04:00", etc.
+ * Kept for any other callers that need a display-only offset string; it is no
+ * longer used by convertToRFC3339 (see below).
+ */
 export function getTimezoneOffset() {
   const offsetInMinutes = new Date().getTimezoneOffset();
   const sign = offsetInMinutes <= 0 ? '+' : '-';
@@ -94,20 +102,38 @@ export function getTimezoneOffset() {
   return formattedOffset;
 }
 
+/**
+ * Combines a calendar date (e.g. "2026-09-22") and a time (e.g. "2:30 PM" or
+ * "14:30") into an RFC 3339 timestamp with the browser's local UTC offset,
+ * e.g. "2026-09-22T14:30:00+05:30".
+ *
+ * Previous implementation parsed `${dateString} ${timeString}` with the
+ * built-in `Date` constructor - a format WebKit does not reliably accept,
+ * sometimes producing `Invalid Date` - and then applied the timezone offset
+ * twice: once by manually shifting the minutes, and again inside
+ * `toISOString()`, which itself converts local time to UTC. That double
+ * shift corrupted the stored meeting time by 2x the real offset.
+ *
+ * dayjs parses the same two strings explicitly with a known format, so the
+ * result does not depend on the browser's date-string parser, and its
+ * `format()` writes out the local offset directly - no manual offset maths,
+ * so there is nothing left to double up.
+ */
 export function convertToRFC3339(dateString: string, timeString: string) {
-  const timeZoneOffset = getTimezoneOffset();
-  const date = new Date(`${dateString} ${timeString}`);
+  // `timeString` comes either as "1:30 PM" (from the time dropdown, see formatTime()
+  // above) or already as 24-hour "13:30". Accept both, but require an exact match so a
+  // malformed value is caught here rather than silently producing a wrong timestamp.
+  const time = dayjs(timeString, ['h:mm A', 'HH:mm'], true);
+  if (!time.isValid()) {
+    throw new Error(`convertToRFC3339: could not parse time "${timeString}"`);
+  }
 
-  const [offsetSign, offsetHours, offsetMinutes] = timeZoneOffset.match(/([+-])(\d{2}):(\d{2})/)!.slice(1);
+  const date = dayjs(`${dateString} ${time.format('HH:mm')}`, 'YYYY-MM-DD HH:mm', true);
+  if (!date.isValid()) {
+    throw new Error(`convertToRFC3339: could not parse date "${dateString}" and time "${timeString}"`);
+  }
 
-  const offsetInMinutes = (parseInt(offsetHours) * 60 + parseInt(offsetMinutes)) * (offsetSign === '+' ? 1 : -1);
-  date.setMinutes(date.getMinutes() + offsetInMinutes);
-
-  const isoString = date.toISOString();
-  const [isoDate, isoTime] = isoString.split('T');
-
-  // Return the formatted date and time in RFC 3339 format
-  return `${isoDate}T${isoTime.split('.')[0]}${timeZoneOffset}`;
+  return date.format('YYYY-MM-DDTHH:mm:ssZ');
 }
 
 export function convertToLocaleTime(dateStr?: string) {
