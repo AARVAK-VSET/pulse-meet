@@ -27,7 +27,10 @@
     "start:prod": "cd server && npm run start",
     "start:all": "npm-run-all2 -p start:client start:server",
     "start:docker": "docker-compose up --build --remove-orphans",
-    "test": "jest"
+    "test": "npm run test --w server",
+    "test:unit": "npm run test:unit --w server",
+    "test:integration": "npm run test:integration --w server",
+    "test:cov": "npm run test:cov --w server"
   },
   "workspaces": [
     "shared",
@@ -35,9 +38,6 @@
     "server"
   ],
   "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "jest": "^30.5.2",
-    "npm-run-all2": "^7.0.1",
-    "ts-jest": "^29.4.12"
+    "npm-run-all2": "^7.0.1"
   }
 }
