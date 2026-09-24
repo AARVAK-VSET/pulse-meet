@@ -50,7 +50,7 @@ const StyledTextField = ({ id, sx, startIcon, onChange, value, placeholder }: St
               fontSize: theme.typography.subtitle1,
             },
             '& .MuiInputBase-input::placeholder': {
-              color: theme.palette.primary,
+              color: theme.palette.primary.main,
               fontSize: theme.typography.subtitle1,
             },
           }),
