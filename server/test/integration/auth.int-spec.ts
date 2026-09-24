@@ -28,11 +28,12 @@ describe('Auth API (integration)', () => {
       expect(res.body).toMatchObject({ status: 'success', data: true });
 
       const cookies = cookieMap(res);
-      expect(cookies.email).toBe('organizer@example.com');
-      expect(cookies.hd).toBe('example.com');
+      expect(cookies.email).toBeUndefined();
+      expect(cookies.hd).toBeUndefined();
       expect(cookies.accessToken).not.toBe('google-access-token');
       await expect(t.encryption.decrypt(cookies.accessToken, cookies.accessTokenIv)).resolves.toBe('google-access-token');
       await expect(t.encryption.decrypt(cookies.refreshToken, cookies.refreshTokenIv)).resolves.toBe('google-refresh-token');
+      await expect(t.encryption.decrypt(cookies.session, cookies.sessionIv)).resolves.toBe(JSON.stringify({ email: 'organizer@example.com', hd: 'example.com' }));
 
       const raw = (res.headers['set-cookie'] as unknown as string[]).find((c) => c.startsWith('accessToken='));
       expect(raw).toMatch(/HttpOnly/);
@@ -81,7 +82,7 @@ describe('Auth API (integration)', () => {
         .expect(201);
 
       const cookies = cookieMap(res);
-      expect(cookies).toMatchObject({ accessToken: '', accessTokenIv: '', email: '', hd: '' });
+      expect(cookies).toMatchObject({ accessToken: '', accessTokenIv: '', session: '', sessionIv: '', email: '', hd: '' });
       expect(cookies.refreshToken).toBeUndefined();
       expect(t.googleApi.revokedTokens).toEqual([]);
     });

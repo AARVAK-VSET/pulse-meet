@@ -49,8 +49,17 @@ export async function createTestApp(): Promise<TestApp> {
   const encryption = app.get(EncryptionService);
 
   const authCookies = async (email = googleApi.userEmail): Promise<string[]> => {
-    const { encryptedData, iv } = await encryption.encrypt('google-access-token');
-    return [`accessToken=${encryptedData}`, `accessTokenIv=${iv}`, `email=${encodeURIComponent(email)}`, 'hd=example.com'];
+    const accessToken = (await encryption.encrypt('google-access-token'))!;
+    const session = (await encryption.encrypt(JSON.stringify({ email, hd: 'example.com' })))!;
+
+    return [
+      `accessToken=${accessToken.encryptedData}`,
+      `accessTokenIv=${accessToken.iv}`,
+      `session=${session.encryptedData}`,
+      `sessionIv=${session.iv}`,
+      'email=forged@example.com',
+      'hd=forged.example',
+    ];
   };
 
   return { app, googleApi, encryption, authCookies };
