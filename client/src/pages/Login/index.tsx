@@ -1,4 +1,5 @@
 import { Box, Button, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { GoogleIcon } from '@components/CustomIcons';
 import { useLocation } from 'react-router-dom';
 import { secrets } from '@config/secrets';
@@ -11,9 +12,11 @@ const Login = () => {
   const { state } = useLocation();
   const errorMessage = state?.message;
 
-  if (errorMessage) {
-    toast.error(errorMessage);
-  }
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+  }, [errorMessage]);
 
   async function onSignInClick(): Promise<void> {
     await api.login();
