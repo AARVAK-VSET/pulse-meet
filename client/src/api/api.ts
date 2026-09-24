@@ -29,11 +29,17 @@ export default class Api {
     this.handleTokenRefresh();
   }
 
-  static getInstance(navigate: NavigateFunction): Api {
+  static getInstance(navigate?: NavigateFunction): Api {
     if (!Api.instance) {
       Api.instance = new Api(navigate);
+    } else if (navigate) {
+      Api.instance.setNavigate(navigate);
     }
     return Api.instance;
+  }
+
+  setNavigate(navigate?: NavigateFunction) {
+    this.navigate = navigate;
   }
 
   getHeaders() {
