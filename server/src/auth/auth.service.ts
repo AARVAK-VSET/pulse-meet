@@ -29,22 +29,31 @@ export class AuthService {
     const client = this.googleApiService.getOAuthClient();
     const { tokens } = await this.googleApiService.getToken(client, code);
     const userInfo = await this.jwtService.decode(tokens.id_token);
+    const email = typeof userInfo === 'object' && typeof userInfo?.email === 'string' ? userInfo.email : undefined;
+    const hd = typeof userInfo === 'object' && typeof userInfo?.hd === 'string' ? userInfo.hd : undefined;
+
+    if (!email || !hd) {
+      throw new UnauthorizedException('Missing user identity in OAuth response');
+    }
 
     await this.getDirectoryResources(client);
     await this.getPeopleResources(client);
 
     this.logger.log(`User logged in: ${JSON.stringify(userInfo)}`);
 
-    const encryptedAccessToken = await this.encryptionService.encrypt(tokens.access_token);
+    const encryptedAccessToken = (await this.encryptionService.encrypt(tokens.access_token))!;
     const encryptedRefreshToken = await this.encryptionService.encrypt(tokens.refresh_token);
+    const encryptedSession = (await this.encryptionService.encrypt(JSON.stringify({ email, hd })))!;
 
     return {
       accessToken: encryptedAccessToken.encryptedData,
       accessTokenIv: encryptedAccessToken.iv,
       refreshToken: encryptedRefreshToken?.encryptedData,
       refreshTokenIv: encryptedRefreshToken?.iv,
-      hd: userInfo.hd,
-      email: userInfo.email,
+      session: encryptedSession.encryptedData,
+      sessionIv: encryptedSession.iv,
+      hd,
+      email,
     };
   }
 

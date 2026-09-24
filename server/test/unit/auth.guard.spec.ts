@@ -10,8 +10,34 @@ describe('AuthGuard', () => {
   const guard = new AuthGuard(encryption);
 
   it('decrypts the access token cookie onto the request', async () => {
-    const { encryptedData, iv } = await encryption.encrypt('google-access-token');
-    const request = { cookies: { accessToken: encryptedData, accessTokenIv: iv, hd: 'example.com', email: 'alice@example.com' } } as any;
+    const accessToken = (await encryption.encrypt('google-access-token'))!;
+    const session = (await encryption.encrypt(JSON.stringify({ hd: 'example.com', email: 'alice@example.com' })))!;
+    const request = {
+      cookies: {
+        accessToken: accessToken.encryptedData,
+        accessTokenIv: accessToken.iv,
+        session: session.encryptedData,
+        sessionIv: session.iv,
+      },
+    } as any;
+
+    await expect(guard.canActivate(contextFor(request))).resolves.toBe(true);
+    expect(request).toMatchObject({ accessToken: 'google-access-token', hd: 'example.com', email: 'alice@example.com' });
+  });
+
+  it('ignores plaintext identity cookie overrides', async () => {
+    const accessToken = (await encryption.encrypt('google-access-token'))!;
+    const session = (await encryption.encrypt(JSON.stringify({ hd: 'example.com', email: 'alice@example.com' })))!;
+    const request = {
+      cookies: {
+        accessToken: accessToken.encryptedData,
+        accessTokenIv: accessToken.iv,
+        session: session.encryptedData,
+        sessionIv: session.iv,
+        hd: 'forged.example',
+        email: 'mallory@example.com',
+      },
+    } as any;
 
     await expect(guard.canActivate(contextFor(request))).resolves.toBe(true);
     expect(request).toMatchObject({ accessToken: 'google-access-token', hd: 'example.com', email: 'alice@example.com' });
@@ -21,6 +47,7 @@ describe('AuthGuard', () => {
     ['no cookies', {}],
     ['no IV', { cookies: { accessToken: 'abc' } }],
     ['no token', { cookies: { accessTokenIv: 'abc' } }],
+    ['no session', { cookies: { accessToken: 'abc', accessTokenIv: 'def' } }],
   ])('rejects requests with %s', async (_, request) => {
     await expect(guard.canActivate(contextFor(request))).rejects.toThrow('No access token found');
   });
