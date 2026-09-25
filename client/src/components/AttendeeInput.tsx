@@ -1,11 +1,12 @@
 import { useApi } from '@/context/ApiContext';
 import { isEmailValid } from '@/helpers/utility';
 import PeopleAltRoundedIcon from '@mui/icons-material/PeopleAltRounded';
-import { Autocomplete, Box, Chip, debounce, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Chip, TextField, Typography } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import { IPeopleInformation } from '@quickmeet/shared';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useDebouncedCallback } from '@/hooks/useDebouncedCallback';
 
 interface AttendeeInputProps {
   id: string;
@@ -63,7 +64,7 @@ export default function AttendeeInput({ id, onChange, value, type }: AttendeeInp
     }
     setTextInput('');
   };
-  const debouncedInputChange = debounce(handleInputChange, 300);
+  const debouncedInputChange = useDebouncedCallback(handleInputChange, 300);
   return (
     <Box
       display="flex"
@@ -106,7 +107,17 @@ export default function AttendeeInput({ id, onChange, value, type }: AttendeeInp
           multiple
           options={options}
           value={value || []}
-          getOptionLabel={(option) => (typeof option === 'object' && option.email ? option.email : '')}
+          getOptionLabel={(option) => {
+            if (typeof option === 'string') {
+              return option;
+            }
+            return option.email || option.name || '';
+          }}
+          isOptionEqualToValue={(option, val) => {
+            const optionEmail = typeof option === 'string' ? option : option.email;
+            const valEmail = typeof val === 'string' ? val : val.email;
+            return Boolean(optionEmail && valEmail && optionEmail === valEmail);
+          }}
           noOptionsText=""
           freeSolo
           inputValue={textInput}
@@ -130,15 +141,19 @@ export default function AttendeeInput({ id, onChange, value, type }: AttendeeInp
             },
           }}
           onInputChange={debouncedInputChange}
-          renderTags={(value: readonly IPeopleInformation[], getTagProps) =>
+          renderTags={(value: readonly (string | IPeopleInformation)[], getTagProps) =>
             value.map((option, index) => {
               const { key, ...tagProps } = getTagProps({ index });
+              const isString = typeof option === 'string';
+              const email = isString ? option : option.email || '';
+              const name = isString ? option.split('@')[0] : option.name || option.email || '';
+              const photo = isString ? '' : option.photo || '';
               return (
                 <Chip
                   avatar={
                     <Avatar
-                      alt={option.email}
-                      src={option.photo}
+                      alt={email}
+                      src={photo}
                       sx={[
                         (theme) => ({
                           bgcolor: theme.palette.grey[50],
@@ -147,7 +162,7 @@ export default function AttendeeInput({ id, onChange, value, type }: AttendeeInp
                     />
                   }
                   variant="outlined"
-                  label={option.name}
+                  label={name}
                   key={key}
                   {...tagProps}
                 />
@@ -191,7 +206,7 @@ export default function AttendeeInput({ id, onChange, value, type }: AttendeeInp
           )}
           renderOption={(props, option) => {
             const { key, ...optionProps } = props;
-            const isSelected = value?.includes(option.email);
+            const isSelected = value?.some((v) => (typeof v === 'string' ? v === option.email : v.email === option.email)) ?? false;
             return (
               <Box
                 key={key}
