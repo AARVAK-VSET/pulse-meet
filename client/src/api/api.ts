@@ -1,7 +1,7 @@
 import { ROUTES } from '@/config/routes';
 import { secrets } from '@config/secrets';
 import { CacheService, CacheServiceFactory } from '@helpers/cache';
-import { ApiResponse, BookRoomDto, DeleteResponse, EventResponse, GetAvailableRoomsQueryDto, IAvailableRooms, StatusTypes } from '@quickmeet/shared';
+import { ApiResponse, BookRoomDto, DeleteResponse, EventResponse, GetAvailableRoomsQueryDto, IAvailableRooms, IPeopleInformation, StatusTypes } from '@quickmeet/shared';
 import axios, { AxiosInstance } from 'axios';
 import { toast } from 'react-hot-toast';
 import { NavigateFunction } from 'react-router-dom';
@@ -214,7 +214,7 @@ export default class Api {
     }
   }
 
-  async searchPeople(email: string): Promise<ApiResponse<string[]>> {
+  async searchPeople(email: string): Promise<ApiResponse<IPeopleInformation[]>> {
     try {
       const res = await this.client.get('/api/directory/people', {
         params: {
@@ -222,7 +222,7 @@ export default class Api {
         },
       });
 
-      return res.data as ApiResponse<string[]>;
+      return res.data as ApiResponse<IPeopleInformation[]>;
     } catch (error: any) {
       return this.handleError(error);
     }

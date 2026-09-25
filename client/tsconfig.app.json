@@ -23,7 +23,7 @@
       "@theme/*": ["theme/*"],
       "@config/*": ["config/*"],
       "@api/*": ["api/*"],
-      "@quickmeet/shared": ["../../shared/src/index.ts"]
+      "@quickmeet/shared": ["../../shared/dist/index.d.ts"]
     },
 
     /* Linting */
