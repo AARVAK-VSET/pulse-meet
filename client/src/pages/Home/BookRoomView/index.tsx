@@ -17,7 +17,7 @@ import {
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';
 import EventSeatRoundedIcon from '@mui/icons-material/EventSeatRounded';
 import { FormData, IAvailableRoomsDropdownOption } from '@helpers/types';
-import { BookRoomDto, EventResponse, IConferenceRoom, IAvailableRooms, IPeopleInformation } from '@quickmeet/shared';
+import { BookRoomDto, EventResponse, IConferenceRoom, IAvailableRooms, IPeopleInformation } from '@pulse-meet/shared';
 import HourglassBottomRoundedIcon from '@mui/icons-material/HourglassBottomRounded';
 import MeetingRoomRoundedIcon from '@mui/icons-material/MeetingRoomRounded';
 import TitleIcon from '@mui/icons-material/Title';

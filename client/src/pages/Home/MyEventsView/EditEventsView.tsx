@@ -29,7 +29,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en-gb';
 import { useEffect, useRef, useState } from 'react';
-import { EventResponse, IConferenceRoom, IAvailableRooms, IPeopleInformation } from '@quickmeet/shared';
+import { EventResponse, IConferenceRoom, IAvailableRooms, IPeopleInformation } from '@pulse-meet/shared';
 import { useNavigate } from 'react-router-dom';
 import DatePickerPopper from '@/pages/Home/MyEventsView/DatePickerPopper';
 
