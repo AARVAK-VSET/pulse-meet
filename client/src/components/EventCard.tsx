@@ -1,7 +1,7 @@
 import { Typography, Chip, IconButton, Box, styled, Theme, SxProps, Menu, MenuItem, Tooltip } from '@mui/material';
 import InsertLinkRoundedIcon from '@mui/icons-material/InsertLinkRounded';
 import React, { useEffect, useState } from 'react';
-import { EventResponse } from '@quickmeet/shared';
+import { EventResponse } from '@pulse-meet/shared';
 import MeetingRoomRoundedIcon from '@mui/icons-material/MeetingRoomRounded';
 import StairsIcon from '@mui/icons-material/Stairs';
 import AccessTimeFilledRoundedIcon from '@mui/icons-material/AccessTimeFilledRounded';

@@ -7,7 +7,7 @@ import { ROUTES } from '@config/routes';
 import { FormData } from '@helpers/types';
 import { Box, Divider, Skeleton, Stack, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
-import { BookRoomDto, EventResponse, IConferenceRoom } from '@quickmeet/shared';
+import { BookRoomDto, EventResponse, IConferenceRoom } from '@pulse-meet/shared';
 import { useNavigate } from 'react-router-dom';
 import { convertToRFC3339, getTimeZoneString, renderError } from '@helpers/utility';
 import toast from 'react-hot-toast';

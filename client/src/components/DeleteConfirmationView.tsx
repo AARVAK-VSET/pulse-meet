@@ -4,7 +4,7 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { Box, SxProps, Theme } from '@mui/material';
 import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
-import { EventResponse } from '@quickmeet/shared';
+import { EventResponse } from '@pulse-meet/shared';
 import { chromeBackground, isChromeExt } from '@helpers/utility';
 import EventCard from './EventCard';
 

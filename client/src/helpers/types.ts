@@ -1,5 +1,5 @@
 import { RoomsDropdownOption } from '@/components/RoomsDropdown';
-import type { IPeopleInformation } from '@quickmeet/shared';
+import type { IPeopleInformation } from '@pulse-meet/shared';
 
 export interface FormData {
   startTime: string;
