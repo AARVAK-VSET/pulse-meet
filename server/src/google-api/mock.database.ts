@@ -49,7 +49,7 @@ export class CalenderMockDb {
       {
         resourceId: 'room207',
         resourceName: 'Cascade',
-        resourceEmail: 'cascade.room@@resource.calendar.google.com',
+        resourceEmail: 'cascade.room@resource.calendar.google.com',
         userVisibleDescription: 'A quiet room with comfortable seating and a large whiteboard for brainstorming.',
         floorName: 'F2',
         capacity: 6,
@@ -251,10 +251,10 @@ export class CalenderMockDb {
     event.organizer = { email: emailPool[Math.floor(Math.random() * emailPool.length)] };
 
     const events = await this.getFromCache('events', []);
-    events.push({ ...event, id: randomId });
+    const createdEvent = { ...event, id: randomId };
+    events.push(createdEvent);
     await this.saveToCache('events', events);
-
-    return event;
+    return createdEvent;
   }
 
   async getEvent(eventId: string): Promise<calendar_v3.Schema$Event | undefined> {
@@ -314,7 +314,7 @@ export class CalenderMockDb {
     });
 
     for (const event of filteredEvents) {
-      for (const attendee of event.attendees) {
+      for (const attendee of event.attendees ?? []) {
         if (attendee.email.includes('resource.calendar.google.com')) {
           attendee.resource = true;
         }

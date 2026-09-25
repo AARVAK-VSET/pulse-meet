@@ -103,6 +103,10 @@ describe('Calendar API (integration)', () => {
     it('creates, lists and deletes an event', async () => {
       const created = await api().post('/api/event').set('Cookie', cookies).send(booking).expect(201);
       expect(created.body.data).toMatchObject({ room: 'Oak', roomEmail: OAK, summary: 'Sync', start: at('10:00'), end: at('10:30') });
+      expect(t.googleApi.events[0].organizer.email).toBe(t.googleApi.userEmail);
+      expect(t.googleApi.events[0].attendees).toEqual(
+        expect.arrayContaining([expect.objectContaining({ email: t.googleApi.userEmail, organizer: true, responseStatus: 'accepted' })]),
+      );
 
       const listed = await api()
         .get('/api/events')

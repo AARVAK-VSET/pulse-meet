@@ -20,7 +20,7 @@ export class AuthController {
 
   @Post('/oauth2/callback')
   async oAuthCallback(@Body('code') code: string, @Res({ passthrough: true }) res: Response): Promise<ApiResponse<Boolean>> {
-    const { accessToken, accessTokenIv, refreshToken, refreshTokenIv, hd, email } = await this.authService.login(code);
+    const { accessToken, accessTokenIv, refreshToken, refreshTokenIv, session, sessionIv, email } = await this.authService.login(code);
 
     if (refreshToken && refreshTokenIv) {
       this.setCookie(res, 'refreshToken', refreshToken);
@@ -29,9 +29,8 @@ export class AuthController {
 
     this.setCookie(res, 'accessToken', accessToken, toMs('1h'));
     this.setCookie(res, 'accessTokenIv', accessTokenIv, toMs('1h'));
-
-    this.setCookie(res, 'hd', hd);
-    this.setCookie(res, 'email', email);
+    this.setCookie(res, 'session', session);
+    this.setCookie(res, 'sessionIv', sessionIv);
 
     this.logger.log(`OAuth flow completed for user ${email} with accessToken ${accessToken} and refreshToken ${refreshToken}`);
     return createResponse(true);
@@ -41,6 +40,8 @@ export class AuthController {
   async logout(@Req() req: _Request, @Res({ passthrough: true }) res: Response, @Body('revokeToken') revokeToken?: boolean): Promise<ApiResponse<boolean>> {
     res.clearCookie('accessToken');
     res.clearCookie('accessTokenIv');
+    res.clearCookie('session');
+    res.clearCookie('sessionIv');
     res.clearCookie('hd');
     res.clearCookie('email');
 
