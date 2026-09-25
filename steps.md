@@ -153,7 +153,7 @@ In [`client/src/api/api.ts`](client/src/api/api.ts):
 
 ### Step 4: Fix Shared Types Path Resolution
 In [`client/tsconfig.app.json`](client/tsconfig.app.json):
-- Point `@quickmeet/shared` path to `../../shared/dist/index.d.ts` so `tsc -b` uses compiled declarations matching the monorepo workspace.
+- Point `@pulse-meet/shared` path to `../../shared/dist/index.d.ts` so `tsc -b` uses compiled declarations matching the monorepo workspace.
 
 ### Step 5: Configure Vitest to include `.tsx` Test Files
 In [`client/vitest.config.ts`](client/vitest.config.ts):
