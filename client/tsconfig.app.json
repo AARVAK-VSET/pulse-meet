@@ -23,7 +23,7 @@
       "@theme/*": ["theme/*"],
       "@config/*": ["config/*"],
       "@api/*": ["api/*"],
-      "@quickmeet/shared": ["../../shared/dist/index.d.ts"]
+      "@pulse-meet/shared": ["../../shared/dist/index.d.ts"]
     },
 
     /* Linting */

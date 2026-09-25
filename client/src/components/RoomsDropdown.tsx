@@ -1,7 +1,7 @@
 import { Box, ListSubheader, MenuItem, Select, SelectChangeEvent, Skeleton, styled, Typography } from '@mui/material';
 import { ReactElement } from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { IConferenceRoom } from '@quickmeet/shared';
+import { IConferenceRoom } from '@pulse-meet/shared';
 import { IAvailableRoomsDropdownOption } from '@/helpers/types';
 
 interface DropdownProps {
