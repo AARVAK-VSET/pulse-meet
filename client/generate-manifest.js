@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 
 config();
 
-const hostPermission = `${process.env.VITE_BACKEND_ENDPOINT}/*`;
+const hostPermission = `${process.env.VITE_BACKEND_ENDPOINT || 'http://localhost:8000'}/*`;
 const appDescription = process.env.VITE_APP_SLOGAN;
 const appTitle = process.env.VITE_APP_TITLE;
 const buildNumber = process.env.VITE_BUILD_NUMBER || 0;
